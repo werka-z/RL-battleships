@@ -55,13 +55,13 @@ public class Player {
             Coordinates shotCoords = new Coordinates(coords);
             String result = checkShot(shotCoords);
 
-            if (result.equals("ostatni zatopiony")) {
+            if (result.equals("hit and sunk")) {
                 network.sendMessage(new Message(result, null));
                 handleGameEnd(false);
                 return;
             }
 
-            char marker = result.equals("pudło") ? '~' : '@';
+            char marker = result.equals("miss") ? '~' : '@';
             myBoard.markShot(shotCoords.getRow(), shotCoords.getCol(), marker);
 
             Coordinates myShot = getRandomTarget();
@@ -77,11 +77,11 @@ public class Player {
 
     private void handleGameEnd(boolean won) {
         if (won){
-            System.out.print("Wygrana\n");
+            System.out.print("Won!\n");
             enemyBoard.changeUnknownsToSea();
             enemyBoard.displayBoard();
         } else {
-            System.out.print("Przegrana\n");
+            System.out.print("Lost...\n");
             enemyBoard.changeMissesToSea();
             enemyBoard.displayBoard();
         }
@@ -98,7 +98,7 @@ public class Player {
 
             playGame();
         } catch (Exception e) {
-            System.out.println("Błąd: " + e.getMessage());
+            System.out.println("Error: " + e.getMessage());
         }
     }
 
@@ -107,22 +107,22 @@ public class Player {
             Message message = network.receiveMessage();
             if (message == null) continue;
 
-            System.out.println("Otrzymano: " + message.format().trim());
+            System.out.println("Received: " + message.format().trim());
 
-            if (message.command().equals("ostatni zatopiony")) {
+            if (message.command().equals("last ship sunk")) {
                 handleGameEnd(true);
                 return;
             }
 
             if (lastShot != null) {
                 switch (message.command()) {
-                    case "pudło":
+                    case "miss":
                         enemyBoard.markShot(lastShot.getRow(), lastShot.getCol(), '~');
                         break;
-                    case "trafiony":
+                    case "hit":
                         enemyBoard.markShot(lastShot.getRow(), lastShot.getCol(), '#');
                         break;
-                    case "trafiony zatopiony":
+                    case "hit and sunk":
                         enemyBoard.markShot(lastShot.getRow(), lastShot.getCol(), '#');
                         enemyBoard.markBorders(lastShot.getRow(), lastShot.getCol());
                         break;
@@ -142,15 +142,15 @@ public class Player {
         if (board[coords.getRow()][coords.getCol()] == '#' || board[coords.getRow()][coords.getCol()] == '@') {
             board[coords.getRow()][coords.getCol()] = '@';
             if (isLastShip()) {
-                return "ostatni zatopiony";
+                return "last ship sunk";
             }
             if (isShipSunk(coords.getRow(), coords.getCol())) {
-                return "trafiony zatopiony";
+                return "hit and sunk";
             }
-            return "trafiony";
+            return "hit";
         }
         board[coords.getRow()][coords.getCol()] = '~';
-        return "pudło";
+        return "miss";
     }
 
     private boolean isLastShip() {

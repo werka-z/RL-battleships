@@ -1,5 +1,6 @@
 package main.java.battleships;
 
+import main.java.battleships.model.Board;
 import main.java.battleships.model.GameConfig;
 import main.java.battleships.model.GameMode;
 
@@ -7,12 +8,12 @@ public class Main {
     public static void main(String[] args) {
         GameConfig config = parseArgs(args);
         if (config == null) {
-            System.out.println("Nieprawidłowe parametry. Użycie:");
+            System.out.println("Wrong parameters. Use:");
             System.out.println("-mode [server|client] -port N -map map-file [-host hostName]");
             return;
         }
 
-        /* optional block if nothing is in "serverFile" or "clientFile" - generating Boards and saving to files
+        //optional block if nothing is in "serverFile" or "clientFile" - generating Boards and saving to files
 
         Board sampleBoard = new Board();
         sampleBoard.generateMap();
@@ -20,7 +21,7 @@ public class Main {
             sampleBoard.saveBoardToFile("serverFile");
         } else {
             sampleBoard.saveBoardToFile("clientFile");
-        } */
+        }
 
         Player player = new Player(config);
         player.start();

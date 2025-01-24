@@ -32,7 +32,7 @@ public class NetworkHandler implements AutoCloseable {
     public void sendMessage(Message message) {
         writer.print(message.format());
         writer.flush();
-        System.out.println("Wysłano: " + message.format().trim());
+        System.out.println("Sent: " + message.format().trim());
         lastSentMessage = message;
         retryCount = 0;
     }
@@ -50,10 +50,10 @@ public class NetworkHandler implements AutoCloseable {
         } catch (SocketTimeoutException e) {
             retryCount++;
             if (retryCount >= 3) {
-                System.out.println("Błąd komunikacji");
+                System.out.println("Communication error");
                 System.exit(1);
             }
-            System.out.println("Ponawiam wysłanie wiadomości (próba " + retryCount + "/3)");
+            System.out.println("Retrying sending ( " + retryCount + "/3)");
             sendMessage(lastSentMessage);
         } catch (IOException e) {
             System.exit(1);
