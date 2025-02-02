@@ -1,4 +1,4 @@
-package main.java.battleships.model;
+package model;
 
 import java.io.*;
 import java.util.Random;
@@ -152,9 +152,12 @@ public class Board {
 
     public void displayBoard() {
         char[][] boardArray = getBoard();
+        System.out.println("  A B C D E F G H I J");
         for (int i = 0; i < 10; i++) {
+            System.out.print(i+1);
+            if (i!=9) System.out.print(" ");
             for (int j = 0; j < 10; j++) {
-                System.out.print(boardArray[i][j]);
+                System.out.print(boardArray[i][j] + " ");
             }
             System.out.println();
         }

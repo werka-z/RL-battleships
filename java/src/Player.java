@@ -1,11 +1,9 @@
-package main.java.battleships;
-
-import main.java.battleships.model.Board;
-import main.java.battleships.model.Coordinates;
-import main.java.battleships.model.GameConfig;
-import main.java.battleships.model.GameMode;
-import main.java.battleships.network.Message;
-import main.java.battleships.network.NetworkHandler;
+import model.Board;
+import model.Coordinates;
+import model.GameConfig;
+import model.GameMode;
+import network.Message;
+import network.NetworkHandler;
 
 import java.util.HashSet;
 import java.util.Random;

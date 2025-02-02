@@ -1,8 +1,7 @@
-package main.java.battleships;
+import model.Board;
+import model.GameConfig;
+import model.GameMode;
 
-import main.java.battleships.model.Board;
-import main.java.battleships.model.GameConfig;
-import main.java.battleships.model.GameMode;
 
 public class Main {
     public static void main(String[] args) {
@@ -12,8 +11,6 @@ public class Main {
             System.out.println("-mode [server|client] -port N -map map-file [-host hostName]");
             return;
         }
-
-        //optional block if nothing is in "serverFile" or "clientFile" - generating Boards and saving to files
 
         Board sampleBoard = new Board();
         sampleBoard.generateMap();
@@ -35,12 +32,13 @@ public class Main {
 
             switch (args[i]) {
                 case "-mode":
-                    if (args[i + 1].equals("server")) {
-                        config.setMode(GameMode.SERVER);
-                    } else if (args[i + 1].equals("client")) {
-                        config.setMode(GameMode.CLIENT);
-                    } else {
-                        return null;
+                    switch (args[i + 1]) {
+                        case "server" -> config.setMode(GameMode.SERVER);
+                        case "client" -> config.setMode(GameMode.CLIENT);
+                        case "ai" -> config.setMode(GameMode.AI);
+                        default -> {
+                            return null;
+                        }
                     }
                     break;
                 case "-port":

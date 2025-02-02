@@ -1,4 +1,4 @@
-package main.java.battleships.model;
+package model;
 
 public class GameConfig {
     private GameMode mode;

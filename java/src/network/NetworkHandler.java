@@ -1,6 +1,6 @@
-package main.java.battleships.network;
+package network;
 
-import main.java.battleships.model.GameMode;
+import model.GameMode;
 
 import java.io.*;
 import java.net.ServerSocket;
