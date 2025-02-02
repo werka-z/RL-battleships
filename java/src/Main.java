@@ -1,4 +1,3 @@
-import model.Board;
 import model.GameConfig;
 import model.GameMode;
 
@@ -8,16 +7,8 @@ public class Main {
         GameConfig config = parseArgs(args);
         if (config == null) {
             System.out.println("Wrong parameters. Use:");
-            System.out.println("-mode [server|client] -port N -map map-file [-host hostName]");
+            System.out.println("-mode [server|client|ai] [-port N] [-host hostName]");
             return;
-        }
-
-        Board sampleBoard = new Board();
-        sampleBoard.generateMap();
-        if (config.getMode() == GameMode.SERVER) {
-            sampleBoard.saveBoardToFile("serverFile");
-        } else {
-            sampleBoard.saveBoardToFile("clientFile");
         }
 
         Player player = new Player(config);
@@ -50,9 +41,6 @@ public class Main {
                     break;
                 case "-host":
                     config.setHostName(args[i + 1]);
-                    break;
-                case "-map":
-                    config.setMapFile(args[i + 1]);
                     break;
                 default:
                     return null;

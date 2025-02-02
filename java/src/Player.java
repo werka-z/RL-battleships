@@ -20,7 +20,7 @@ public class Player {
 
     public Player(GameConfig config) {
         this.config = config;
-        this.myBoard = new Board(config.getMapFile());
+        this.myBoard = new Board();
         this.enemyBoard = new Board('?');
         this.random = new Random();
         this.shotsFired = new HashSet<>();

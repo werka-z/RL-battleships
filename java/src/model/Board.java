@@ -1,6 +1,5 @@
 package model;
 
-import java.io.*;
 import java.util.Random;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -22,6 +21,7 @@ public class Board {
         board = new char[BOARD_SIZE][BOARD_SIZE];
         for (int i = 0; i < BOARD_SIZE; i++) {Arrays.fill(board[i], EMPTY);}
         initializeShapes();
+        generateMap();
     }
 
     private void initializeShapes(){
@@ -51,27 +51,6 @@ public class Board {
         board = new char[BOARD_SIZE][BOARD_SIZE];
         for (int i = 0; i < BOARD_SIZE; i++) {Arrays.fill(board[i], c);}
         initializeShapes();
-    }
-
-    public Board(String filename) {
-        board = new char[BOARD_SIZE][BOARD_SIZE];
-        shapes = new HashMap<>();
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
-            String line;
-            int row = 0;
-            while ((line = reader.readLine()) != null && row < BOARD_SIZE) {
-                if (line.length() >= BOARD_SIZE) {
-                    board[row] = line.substring(0, BOARD_SIZE).toCharArray();
-                    row++;
-                }
-            }
-            if (row < BOARD_SIZE) {
-                throw new RuntimeException("Invalid board file format");
-            }
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to load board from file: " + filename, e);
-        }
     }
 
     public void placeShip(int size) {
@@ -120,17 +99,6 @@ public class Board {
 
     public char[][] getBoard() {
         return board;
-    }
-
-    public void saveBoardToFile(String filename) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
-            for (int i = 0; i < BOARD_SIZE; i++) {
-                writer.write(new String(board[i]));
-                writer.newLine();
-            }
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to save board to file: " + filename, e);
-        }
     }
 
     public boolean hasShipsLeft() {
