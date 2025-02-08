@@ -1,5 +1,5 @@
 package model;
 
 public enum GameMode {
-    SERVER, CLIENT, AI
+    SERVER, CLIENT, BOT_USER, AI_USER
 }

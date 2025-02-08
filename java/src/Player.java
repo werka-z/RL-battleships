@@ -7,6 +7,7 @@ import network.NetworkHandler;
 
 import java.util.HashSet;
 import java.util.Random;
+import java.util.Scanner;
 import java.util.Set;
 
 public class Player {
@@ -25,12 +26,95 @@ public class Player {
         this.random = new Random();
         this.shotsFired = new HashSet<>();
 
-        try {
-            this.network = new NetworkHandler(config.getMode(), config.getPort(), config.getHostName());
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to initialize network", e);
+        if (config.getMode() == GameMode.SERVER || config.getMode() == GameMode.CLIENT) {
+            try {
+                this.network = new NetworkHandler(config.getMode(), config.getPort(), config.getHostName());
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to initialize network", e);
+            }
+        } else if (config.getMode() == GameMode.AI_USER || config.getMode() == GameMode.BOT_USER) {
+            try {
+                this.network = new NetworkHandler(GameMode.CLIENT, config.getPort(), config.getHostName());
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to initialize connection", e);
+            }
+        } else { // BOT_USER mode
+            this.network = null;
         }
     }
+
+    private Coordinates getTarget() {
+        return switch (config.getMode()) {
+            case SERVER, CLIENT -> getUserTarget();
+            case AI_USER -> getAITarget();
+            case BOT_USER -> getRandomTarget();
+            default -> throw new IllegalStateException("Invalid game mode");
+        };
+    }
+
+    private Coordinates getUserTarget() {
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            try {
+                System.out.print("Enter target coordinates (e.g. A1): ");
+                String input = scanner.nextLine().trim().toUpperCase();
+
+                if (!input.matches("[A-J][1-9]0?")) {
+                    System.out.println("Invalid format - please use letter A-J followed by number 1-10");
+                    continue;
+                }
+
+                Coordinates coords = new Coordinates(input);
+
+                shotsFired.add(coords);
+                return coords;
+
+            } catch (IllegalArgumentException e) {
+                System.out.println("Invalid coordinates: " + e.getMessage());
+            }
+        }
+    }
+
+    private Coordinates getAITarget() {
+        try {
+            String lastResult = "miss"; // default to miss for first shot
+            if (lastShot != null) {
+                char[][] board = enemyBoard.getBoard();
+                char lastMarker = board[lastShot.getRow()][lastShot.getCol()];
+                if (lastMarker == '#') {
+                    lastResult = "hit";
+                    if (isShipSunk(lastShot.getRow(), lastShot.getCol())) {
+                        lastResult = "hit and sunk";
+                    }
+                }
+            }
+
+            String message = lastResult;
+            if (lastShot != null) {
+                message += ";" + lastShot;
+            }
+
+            network.sendMessage(new Message("move", message));
+            Message response = network.receiveMessage();
+
+            if (response == null || response.coordinates() == null) {
+                throw new RuntimeException("No response from AI server");
+            }
+
+            Coordinates coords = new Coordinates(response.coordinates());
+            if (shotsFired.contains(coords)) {
+                throw new RuntimeException("AI returned already used coordinates: " + coords);
+            }
+
+            shotsFired.add(coords);
+            return coords;
+
+        } catch (Exception e) {
+            System.err.println("Error getting AI target: " + e.getMessage());
+            return getRandomTarget(); // if AI fails fall back to random
+        }
+    }
+
 
     private Coordinates getRandomTarget() {
         if (shotsFired.size() >= 100) { // all positions tried
@@ -59,10 +143,10 @@ public class Player {
                 return;
             }
 
-            char marker = result.equals("miss") ? '~' : '@';
+            char marker = result.equals("miss") ? '~' : '#';
             myBoard.markShot(shotCoords.getRow(), shotCoords.getCol(), marker);
 
-            Coordinates myShot = getRandomTarget();
+            Coordinates myShot = getTarget();
             if (myShot == null) {throw new RuntimeException("No valid shots remaining");}
             network.sendMessage(new Message(result, myShot.toString()));
             new Message(result, myShot.toString());
@@ -90,13 +174,46 @@ public class Player {
     public void start() {
         try {
             myBoard.displayBoard();
+            
             if (config.getMode() == GameMode.CLIENT) {
                 network.sendMessage(new Message("start", "A1"));
+            } else if (config.getMode() == GameMode.BOT_USER) {
+                playBotGame();
+                return;
             }
 
             playGame();
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    private void playBotGame() {
+        while (true) {
+            // Bot's turn
+            Coordinates target = getRandomTarget();
+            if (target == null) {
+                System.out.println("Game ended - no more valid targets");
+                break;
+            }
+
+            // Process shot
+            String result = checkShot(target);
+            System.out.println("Bot fired at " + target + ": " + result);
+
+            // Update board
+            char marker = result.equals("miss") ? '~' : '#';
+            enemyBoard.markShot(target.getRow(), target.getCol(), marker);
+
+            // Display current state
+            System.out.println("\nCurrent board state:");
+            enemyBoard.displayBoard();
+
+            // Check for game end
+            if (result.equals("last ship sunk")) {
+                System.out.println("Game Over - Bot wins!");
+                break;
+            }
         }
     }
 
@@ -137,8 +254,8 @@ public class Player {
 
     private String checkShot(Coordinates coords) {
         char[][] board = myBoard.getBoard();
-        if (board[coords.getRow()][coords.getCol()] == '#' || board[coords.getRow()][coords.getCol()] == '@') {
-            board[coords.getRow()][coords.getCol()] = '@';
+        if (board[coords.getRow()][coords.getCol()] == '#') {
+            board[coords.getRow()][coords.getCol()] = '#';
             if (isLastShip()) {
                 return "last ship sunk";
             }
@@ -156,11 +273,11 @@ public class Player {
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
                 if (board[i][j] == '#') return false;
-
             }
         }
         return true;
     }
+
     private boolean isShipSunk(int row, int col) {
         char[][] board = myBoard.getBoard();
         for (int i = -1; i <= 1; i++) {

@@ -10,7 +10,7 @@ import java.util.Collections;
 public class Board {
 
     private final int BOARD_SIZE = 10;
-    private final char EMPTY = '.';
+    private final char EMPTY = '~';
     private final char SHIP = '#';
     private final char[][] board;
     private final Random random = new Random();
@@ -154,7 +154,7 @@ public class Board {
                 int newCol = col + j;
                 if (newRow >= 0 && newRow < BOARD_SIZE &&
                         newCol >= 0 && newCol < BOARD_SIZE &&
-                        board[newRow][newCol] == '.') {
+                        board[newRow][newCol] == '~') {
                     board[newRow][newCol] = '~';
                 }
             }

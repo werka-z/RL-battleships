@@ -7,12 +7,28 @@ public class Main {
         GameConfig config = parseArgs(args);
         if (config == null) {
             System.out.println("Wrong parameters. Use:");
-            System.out.println("-mode [server|client|ai] [-port N] [-host hostName]");
+            System.out.println("-mode [ai|bot|server|client] [-port N] [-host hostName]");
             return;
+        }
+
+        if (config.getMode() == GameMode.AI_USER) {
+            startAIServer();
         }
 
         Player player = new Player(config);
         player.start();
+    }
+
+    private static void startAIServer() {
+        try {
+            ProcessBuilder pb = new ProcessBuilder("python", "./python/src/battleship_ai.py");
+            pb.inheritIO();
+            pb.start();
+            Thread.sleep(1000);
+        } catch (Exception e) {
+            System.err.println("Failed to start AI server: " + e.getMessage());
+            System.exit(1);
+        }
     }
 
     private static GameConfig parseArgs(String[] args) {
@@ -23,10 +39,12 @@ public class Main {
 
             switch (args[i]) {
                 case "-mode":
+                    System.out.println("Mode: " + args[i + 1]);
                     switch (args[i + 1]) {
                         case "server" -> config.setMode(GameMode.SERVER);
                         case "client" -> config.setMode(GameMode.CLIENT);
-                        case "ai" -> config.setMode(GameMode.AI);
+                        case "ai" -> config.setMode(GameMode.AI_USER);
+                        case "bot" -> config.setMode(GameMode.BOT_USER);
                         default -> {
                             return null;
                         }
