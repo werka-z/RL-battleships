@@ -7,6 +7,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
 
 public class NetworkHandler implements AutoCloseable {
     private final Socket socket;
@@ -15,8 +16,10 @@ public class NetworkHandler implements AutoCloseable {
     private ServerSocket serverSocket;
     private Message lastSentMessage;
     private int retryCount = 0;
+    private final GameMode mode;
 
     public NetworkHandler(GameMode mode, int port, String host) throws IOException {
+        this.mode = mode;
         if (mode == GameMode.SERVER) {
             serverSocket = new ServerSocket(port);
             socket = serverSocket.accept();
@@ -39,7 +42,9 @@ public class NetworkHandler implements AutoCloseable {
 
     public Message receiveMessage() {
         try {
-            socket.setSoTimeout(lastSentMessage != null ? 1000 : 0);
+            // Set timeout based on game mode
+            boolean isHumanPlayer = (mode == GameMode.SERVER || mode == GameMode.CLIENT);
+            socket.setSoTimeout(lastSentMessage != null ? (isHumanPlayer ? 60000 : 1000) : 0);
 
             String line = reader.readLine();
             if (line != null) {
@@ -50,12 +55,21 @@ public class NetworkHandler implements AutoCloseable {
         } catch (SocketTimeoutException e) {
             retryCount++;
             if (retryCount >= 3) {
-                System.out.println("Communication error");
-                System.exit(1);
+                System.out.println("No response received. Would you like to retry? (y/n)");
+                Scanner scanner = new Scanner(System.in);
+                if (scanner.nextLine().trim().equalsIgnoreCase("y")) {
+                    retryCount = 0;
+                    sendMessage(lastSentMessage);
+                } else {
+                    System.out.println("Game terminated by user.");
+                    System.exit(1);
+                }
+            } else {
+                System.out.println("Waiting for response... ( " + retryCount + "/3)");
+                sendMessage(lastSentMessage);
             }
-            System.out.println("Retrying sending ( " + retryCount + "/3)");
-            sendMessage(lastSentMessage);
         } catch (IOException e) {
+            System.out.println("Connection error: " + e.getMessage());
             System.exit(1);
         }
         return null;
