@@ -1,4 +1,4 @@
-package main.java.battleships.network;
+package network;
 
 public record Message(String command, String coordinates) {
 
