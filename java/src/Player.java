@@ -18,6 +18,7 @@ public class Player {
     private final Random random;
     private final Set<Coordinates> shotsFired;
     private Coordinates lastShot;
+    private BattleshipAI ai;
 
     public Player(GameConfig config) {
         this.config = config;
@@ -25,6 +26,10 @@ public class Player {
         this.enemyBoard = new Board('?');
         this.random = new Random();
         this.shotsFired = new HashSet<>();
+
+        if (config.getMode() == GameMode.AI_USER){
+            this.ai = new BattleshipAI();
+        }
 
         if (config.getMode() == GameMode.SERVER || config.getMode() == GameMode.CLIENT) {
             try {
