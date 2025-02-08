@@ -54,7 +54,7 @@ public class Player {
         Scanner scanner = new Scanner(System.in);
         while (true) {
             try {
-                System.out.print("Enter target coordinates (e.g. A1): ");
+                System.out.print("Enter target coordinates: ");
                 String input = scanner.nextLine().trim().toUpperCase();
 
                 if (!input.matches("[A-J][1-9]0?")) {
@@ -141,10 +141,8 @@ public class Player {
 
     public void start() {
         try {
-//            System.out.println("\nYour board:");
-//            myBoard.displayBoard();
-            System.out.println("\nEnemy's board:");
-            enemyBoard.displayBoard();
+            System.out.println("\nYour board:");
+            myBoard.displayBoard();
 
             if (config.getMode() == GameMode.CLIENT) {
                 Coordinates firstMove = getTarget();
@@ -162,13 +160,6 @@ public class Player {
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
-    }
-
-    private void displayGameState() {
-        System.out.println("\nYour board:");
-        myBoard.displayBoard();
-        System.out.println("\nEnemy board:");
-        enemyBoard.displayBoard();
     }
 
     private void processPlayerTurn(Coordinates target) {
@@ -206,7 +197,8 @@ public class Player {
 
     private void playAgainstBot() {
         while (true) {
-            displayGameState();
+            System.out.println("\nEnemy's board:");
+            enemyBoard.displayBoard();
 
             // human's turn
             System.out.print("\nYour turn - ");
@@ -222,9 +214,10 @@ public class Player {
 
     private void playAIGame() {
         while (true) {
-            displayGameState();
+            System.out.println("\nEnemy's board:");
+            enemyBoard.displayBoard();
 
-            System.out.println("\nYour turn - ");
+            System.out.print("\nYour turn - ");
             Coordinates target = getUserTarget();
             processPlayerTurn(target);
             if (myBoard.isLastShip()) break;
@@ -243,7 +236,7 @@ public class Player {
         System.out.println("\nFinal board states:");
         System.out.println("\nYour board:");
         myBoard.displayBoard();
-        System.out.println("\nEnemy board:");
+        System.out.println("\nEnemy's board:");
         enemyBoard.displayBoard();
     }
 
