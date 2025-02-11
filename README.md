@@ -58,7 +58,7 @@ The following diagram illustrates the decision-making process:
 
 ```mermaid
 flowchart LR
-    Start([Get Next Move]) --> PotentialTargets{Check potential targets}
+    Start([Next Move]) --> PotentialTargets{Check potential targets}
     PotentialTargets -->|Present| EvaluateTargets[Evaluate target priorities]
     PotentialTargets -->|Empty| ExplorationCheck{Check exploration rate}
     
@@ -73,6 +73,15 @@ flowchart LR
     
     TryRandom --> ExecuteMove
     QValues --> ExecuteMove
+    
+    ExecuteMove --> UpdateState[update state & Q-values]
+    UpdateState --> Feedback{process feedback}
+    
+    Feedback -->|hit| UpdateHitPattern[update hit patterns]
+    Feedback -->|miss| AdjustStrategy[adjust strategy]
+    
+    UpdateHitPattern --> End([end turn])
+    AdjustStrategy --> End
 ```
 
 The AI doesn't randomly search for ships, but builds a probabilistic model of likely ship locations based on discovered ship segments and their orientations. This approach mirrors how human players analyze the game board, making the agent challenging and believable as an opponent.
