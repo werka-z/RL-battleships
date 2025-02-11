@@ -11,24 +11,8 @@ public class Main {
             return;
         }
 
-        if (config.getMode() == GameMode.AI_USER) {
-            startAIServer();
-        }
-
         Player player = new Player(config);
         player.start();
-    }
-
-    private static void startAIServer() {
-        try {
-            ProcessBuilder pb = new ProcessBuilder("python", "./python/src/battleship_ai.py");
-            pb.inheritIO();
-            pb.start();
-            Thread.sleep(1000);
-        } catch (Exception e) {
-            System.err.println("Failed to start AI server: " + e.getMessage());
-            System.exit(1);
-        }
     }
 
     private static GameConfig parseArgs(String[] args) {

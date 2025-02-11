@@ -1,11 +1,6 @@
 package model;
 
-import java.util.Random;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
-import java.util.Collections;
+import java.util.*;
 
 public class Board {
 
@@ -157,6 +152,66 @@ public class Board {
                         board[newRow][newCol] == '~') {
                     board[newRow][newCol] = '~';
                 }
+            }
+        }
+    }
+
+    public String checkShot(Coordinates coords) {
+        if (board[coords.getRow()][coords.getCol()] == '#') {
+            board[coords.getRow()][coords.getCol()] = '#';
+            if (isLastShip()) {
+                return "last ship sunk";
+            }
+            if (isShipSunk(coords.getRow(), coords.getCol())) {
+                return "hit and sunk";
+            }
+            return "hit";
+        }
+        board[coords.getRow()][coords.getCol()] = '~';
+        return "miss";
+    }
+
+    public boolean isLastShip() {
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            for (int j = 0; j < BOARD_SIZE; j++) {
+                if (board[i][j] == '#') return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean isShipSunk(int row, int col) {
+        Set<Coordinates> checked = new HashSet<>();
+        Set<Coordinates> shipCells = new HashSet<>();
+        findConnectedShipCells(row, col, checked, shipCells);
+
+        for (Coordinates cell : shipCells) {
+            if (board[cell.getRow()][cell.getCol()] == '#') {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void findConnectedShipCells(int row, int col,
+                                        Set<Coordinates> checked,
+                                        Set<Coordinates> shipCells) {
+        Coordinates current = new Coordinates(row, col);
+        if (checked.contains(current)) return;
+
+        checked.add(current);
+        if (board[row][col] != '#' && board[row][col] != 'X') return;
+
+        shipCells.add(current);
+
+        int[][] directions = {{-1,0}, {1,0}, {0,-1}, {0,1}};
+        for (int[] dir : directions) {
+            int newRow = row + dir[0];
+            int newCol = col + dir[1];
+
+            if (newRow >= 0 && newRow < BOARD_SIZE &&
+                    newCol >= 0 && newCol < BOARD_SIZE) {
+                findConnectedShipCells(newRow, newCol, checked, shipCells);
             }
         }
     }
