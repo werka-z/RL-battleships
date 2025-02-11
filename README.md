@@ -37,18 +37,17 @@ java Main -mode ai
 
 The AI implementation leverages [Q-learning](https://en.wikipedia.org/wiki/Q-learning), a model-free reinforcement learning algorithm and combines it with  pattern recognition, allowing adaptation of the strategy during gameplay.
 
-It is built around a [state-action value matrix](src/ai/QLearningAgent.java#L12) that updates based on  outcomes. 
+It is built around a state-action value matrix that updates based on outcomes. 
 Its exploration strategy ensures efficient board coverage and prevents falling into local optima. 
 The system is based on three components:
 
 1. [**The Q-Learning Core**](src/ai/QLearningAgent.java#L123) processes game state and updates action values based on feedback.
-   It maintains the game state through [sophisticated hit tracking](src/main/java/QLearningAgent.java#L78) and
-   [ship orientation detection](src/ai/QLearningAgent.java#L156). Efficient value updates via the
-   [updateQValue method](src/ai/QLearningAgent.java#L90).
+   It maintains the game state through [sophisticated hit tracking](src/ai/QLearningAgent.java#L78) and
+   [ship orientation detection](src/ai/QLearningAgent.java#L156). 
 
 5. [**The Exploration Strategy**](src/ai/CompositeExplorationStrategy.java) manages the balance between exploring new strategies and exploiting learned patterns.
    It employs multiple complementary strategies through its [composite architecture](src/ai/CompositeExplorationStrategy.java#L15),
-   from [systematic search patterns](src/ai/ParityExplorationStrategy.java) to [probability-based targeting](src/ai/QLearningAgent.java#L167).
+   from [systematic search patterns](src/ai/ParityExplorationStrategy.java) to probability-based targeting.
 
 7. [**The Decision Engine**](src/ai/QLearningAgent.java#L45) combines learned values with current game state, and considers factors such
    as ship size constraints, board geometry, and discovered patterns to make optimal decisions.
