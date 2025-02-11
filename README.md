@@ -75,29 +75,28 @@ flowchart LR
     QValues --> ExecuteMove
 ```
 
-The AI doesn't randomly search for ships, but builds a [probabilistic model](src/ai/QLearningAgent.java#L134) of likely ship locations based on discovered ship segments and their orientations. This approach mirrors how human players analyze the game board, making the AI challenging and believable as an opponent.
+The AI doesn't randomly search for ships, but builds a probabilistic model of likely ship locations based on discovered ship segments and their orientations. This approach mirrors how human players analyze the game board, making the agent challenging and believable as an opponent.
 
 ## Architecture
 
-Below is the class structure showing how the agent components interact:
+Below is the simplified class structure showing how the agent components interact:
 
 ```mermaid
 classDiagram
     class QLearningAgent {
         -double[][] stateActionValues
-        -Set~Coordinates~ shotsFired
-        -List~Coordinates~ currentShipHits
-        -PriorityQueue~Target~ potentialTargets
-        +getNextShot() Coordinates
-        -updateQValue(Coordinates, double) void
-        -handleHit(Coordinates) void
+        -shotsFired
+        -currentShipHits
+        -potentialTargets
+        +getNextShot()
+        -updateQValue() 
+        -handleHit()
         ...
     }
 
     class ExplorationStrategy {
         <<abstract>>
-        #int boardSize
-        +getExplorationShot(Set~Coordinates~, double[][]) Coordinates
+         ...
     }
 
     class CompositeExplorationStrategy {
