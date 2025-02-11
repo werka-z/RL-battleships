@@ -4,6 +4,7 @@ import model.GameConfig;
 import model.GameMode;
 import network.Message;
 import network.NetworkHandler;
+import ai.QLearningAgent;
 
 import java.util.HashSet;
 import java.util.Random;
@@ -18,7 +19,7 @@ public class Player {
     private final Random random;
     private final Set<Coordinates> shotsFired;
     private Coordinates lastShot;
-    private BattleshipAI ai;
+    private QLearningAgent ai;
 
     public Player(GameConfig config) {
         this.config = config;
@@ -28,7 +29,7 @@ public class Player {
         this.shotsFired = new HashSet<>();
 
         if (config.getMode() == GameMode.AI_USER){
-            this.ai = new BattleshipAI();
+            this.ai = new QLearningAgent();
         }
 
         if (config.getMode() == GameMode.SERVER || config.getMode() == GameMode.CLIENT) {
