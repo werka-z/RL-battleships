@@ -8,26 +8,24 @@ The game follows standard Battleship rules where players attempt to sink their o
 
 ## Game Modes
 
-### Network Multiplayer
+### 1. Network Multiplayer
 Enables two players to compete over a network connection using a client-server architecture.
 
-Server:
 ```bash
+// server:
 java Main -mode server -port 5000
-```
 
-Client:
-```bash
+// client:
 java Main -mode client -port 5000 -host localhost
 ```
 
-### Bot Mode
+### 2. Bot Mode
 Provides practice gameplay against a computer opponent using basic targeting strategies.
 ```bash
 java Main -mode bot
 ```
 
-### AI Mode
+### 3. AI Mode
 Offers gameplay against an intelligent opponent that employs reinforcement learning for target selection.
 ```bash
 java Main -mode ai
