@@ -1,7 +1,6 @@
 import model.GameConfig;
 import model.GameMode;
 
-
 public class Main {
     public static void main(String[] args) {
         GameConfig config = parseArgs(args);

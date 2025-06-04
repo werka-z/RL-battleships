@@ -82,7 +82,7 @@ flowchart LR
     AdjustStrategy --> End
 ```
 
-The AI doesn't randomly search for ships, but builds a probabilistic model of likely ship locations based on discovered ship segments and their orientations. This approach mirrors how human players analyze the game board, making the agent challenging and believable as an opponent.
+The AI doesn't randomly search for ships, but builds a probabilistic model of likely ship locations based on discovered ship segments and their orientations. This approach mirrors how human players analyze the game board, making the agent challenging as an opponent.
 
 ## Architecture
 

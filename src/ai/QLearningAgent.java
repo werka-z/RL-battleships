@@ -115,9 +115,9 @@ public class QLearningAgent {
     private double getMaxFutureQValue(int row, int col) {
         double maxQ = 0;
         for (int shipSize : SHIP_SIZES) {
-            // Check horizontal possibility
+            // check horizontal
             maxQ = Math.max(maxQ, getDirectionalQValue(row, col, shipSize, true));
-            // Check vertical possibility
+            // check vertical
             maxQ = Math.max(maxQ, getDirectionalQValue(row, col, shipSize, false));
         }
         return maxQ;
@@ -235,8 +235,8 @@ public class QLearningAgent {
 
     private record Target(Coordinates coordinates, double priority) implements Comparable<Target> {
         @Override
-            public int compareTo(Target other) {
-                return Double.compare(other.priority, this.priority);
-            }
+        public int compareTo(Target other) {
+            return Double.compare(other.priority, this.priority);
+
         }
-}
+    }

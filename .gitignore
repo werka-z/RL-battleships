@@ -2,6 +2,6 @@
 .idea/
 *.iml
 httpRequests/
-dataSources/
 dataSources.local.xml
+dataSources/
 /out/

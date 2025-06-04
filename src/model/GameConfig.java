@@ -6,8 +6,6 @@ public class GameConfig {
     private int port;
     private String hostName;
 
-
-
     public boolean validate() {
         if (mode == null) return false;
 
